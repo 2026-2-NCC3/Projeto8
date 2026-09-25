@@ -141,3 +141,11 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Android Studio / Gradle
+src/Entrega 1/Frontend/.gradle/
+src/Entrega 1/Frontend/.idea/
+src/Entrega 1/Frontend/build/
+src/Entrega 1/Frontend/app/build/
+src/Entrega 1/Frontend/local.properties
+*.apk.idsig
