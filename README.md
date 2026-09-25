@@ -71,18 +71,18 @@ O sistema é composto por um aplicativo mobile, uma API REST e um banco de dados
 │
 ├── 📂 documentos/
 │   ├── 📂 Entrega 1/
-│   │   ├── 📂 Disciplina 1/              # Análise Descritiva de Dados
+│   │   ├── 📂 Analise Descritiva de Dados/
 │   │   │   └── 📂 Analise-Descritiva-Dados/
 │   │   │       └── 📄 analise_descritiva_proxima_etapa.xlsx
-│   │   ├── 📂 Disciplina 2/              # POO e Estrutura de Dados
+│   │   ├── 📂 POO e Estrutura de Dados/
 │   │   │   └── 📄 diagrama-classes.md    (Diagrama de classes, Mermaid)
-│   │   ├── 📂 Disciplina 3/              # Dispositivos Móveis
-│   │   └── 📂 Disciplina 4/              # Projeto Interdisciplinar (Aplicativo Móvel)
+│   │   ├── 📂 Dispositivos Moveis/
+│   │   └── 📂 Projeto Interdisciplinar (Aplicativo Movel)/
 │   └── 📂 Entrega 2/
-│       ├── 📂 Disciplina 1/
-│       ├── 📂 Disciplina 2/
-│       ├── 📂 Disciplina 3/
-│       └── 📂 Disciplina 4/
+│       ├── 📂 Analise Descritiva de Dados/
+│       ├── 📂 POO e Estrutura de Dados/
+│       ├── 📂 Dispositivos Moveis/
+│       └── 📂 Projeto Interdisciplinar (Aplicativo Movel)/
 │
 └── 📂 imagens/
 ```
