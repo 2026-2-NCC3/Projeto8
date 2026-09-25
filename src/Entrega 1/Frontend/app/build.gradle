@@ -18,7 +18,7 @@ android {
         // Endereço da API. 10.0.2.2 é o localhost da máquina host visto pelo
         // emulador Android. Se testar em celular físico, troque pelo IP da
         // máquina onde o backend está rodando (mesma rede Wi-Fi).
-        buildConfigField "String", "API_BASE_URL", '"http://10.0.2.2:3000/api/"'
+        buildConfigField "String", "API_BASE_URL", '"https://proxima-etapa-api.onrender.com/api/"'
     }
 
     buildTypes {
