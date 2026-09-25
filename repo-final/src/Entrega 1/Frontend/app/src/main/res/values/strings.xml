@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Próxima Etapa</string>
+    <string name="titulo_login">Entrar</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_senha">Senha</string>
+    <string name="botao_entrar">Entrar</string>
+    <string name="titulo_cursos">Meus cursos</string>
+    <string name="titulo_agenda">Minha agenda</string>
+    <string name="ver_agenda">Ver agenda</string>
+    <string name="titulo_detalhe_curso">Detalhe do curso</string>
+    <string name="carregando">Carregando…</string>
+    <string name="erro_login">Não foi possível entrar. Verifique e-mail e senha.</string>
+    <string name="erro_rede">Falha de conexão. Verifique sua internet e tente novamente.</string>
+    <string name="sair">Sair</string>
+    <string name="confirmar_sair">Deseja sair da sua conta?</string>
+</resources>
