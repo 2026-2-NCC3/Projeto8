@@ -1,0 +1,172 @@
+<resources>
+    <string name="app_name">Próxima Etapa</string>
+
+    <!-- Login -->
+    <string name="titulo_login">Entrar</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_senha">Senha</string>
+    <string name="botao_entrar">Entrar</string>
+    <string name="carregando">Carregando…</string>
+    <string name="sincronizando_dados">Baixando seus dados para usar sem internet…</string>
+    <string name="erro_login">Não foi possível entrar. Verifique e-mail e senha.</string>
+    <string name="erro_rede">Falha de conexão. Verifique sua internet e tente novamente.</string>
+    <string name="sessao_expirada">Sua sessão expirou. Entre novamente.</string>
+
+    <!-- Tela inicial -->
+    <string name="saudacao">Olá, %1$s</string>
+    <string name="nivel_e_pontos">%1$s · %2$d pontos</string>
+    <string name="rotulo_cursos">Cursos</string>
+    <string name="rotulo_presencas">Presenças</string>
+    <string name="rotulo_avisos">Avisos</string>
+    <string name="proximos_encontros">Próximos encontros</string>
+    <string name="sem_proximos_encontros">Nenhum encontro marcado por enquanto. Inscreva-se em um curso para ver sua agenda aqui.</string>
+    <string name="tudo_do_aluno">Tudo que você pode fazer</string>
+    <string name="modo_offline">Você está sem internet. Mostrando os dados salvos no celular.</string>
+
+    <!-- Atalhos -->
+    <string name="atalho_checkin">Registrar presença</string>
+    <string name="atalho_checkin_descricao">Escaneie o QR Code do encontro</string>
+    <string name="atalho_cursos">Cursos</string>
+    <string name="atalho_agenda">Minha agenda</string>
+    <string name="atalho_historico">Histórico de presença</string>
+    <string name="atalho_card">Card digital</string>
+    <string name="atalho_certificados">Certificados</string>
+    <string name="atalho_teste_perfil">Teste de perfil</string>
+    <string name="atalho_mensagens">Comunicados</string>
+    <string name="atalho_chat">Tirar dúvidas</string>
+    <string name="atalho_notificacoes">Notificações</string>
+    <string name="atalho_perfil">Meu perfil</string>
+
+    <!-- Cursos -->
+    <string name="titulo_cursos">Cursos</string>
+    <string name="cursos_vazio">Nenhum curso disponível no momento.</string>
+    <string name="lista_offline">Sem internet: esta lista pode estar desatualizada.</string>
+    <string name="titulo_detalhe_curso">Detalhe do curso</string>
+    <string name="inscrever_se">Quero me inscrever</string>
+    <string name="sem_vagas">Sem vagas disponíveis</string>
+    <string name="ja_inscrito">Você já está inscrito (%1$s)</string>
+    <string name="inscricao_feita">Inscrição confirmada! Os encontros já aparecem na sua agenda.</string>
+    <string name="erro_inscricao">Não foi possível concluir a inscrição.</string>
+    <string name="inscricao_precisa_internet">A inscrição precisa de internet, porque depende de vaga disponível no momento.</string>
+
+    <!-- Agenda -->
+    <string name="titulo_agenda">Minha agenda</string>
+    <string name="ver_agenda">Ver agenda</string>
+    <string name="agenda_vazia">Nenhum encontro na sua agenda ainda.</string>
+    <string name="data_as_hora">%1$s às %2$s</string>
+    <string name="presenca_confirmada">Presença confirmada</string>
+    <string name="presenca_pendente">Presença não registrada</string>
+    <string name="fazer_checkin">Check-in</string>
+
+    <!-- Check-in por QR Code -->
+    <string name="titulo_checkin">Registrar presença</string>
+    <string name="checkin_explicacao">Aponte a câmera para o QR Code projetado no encontro. Se você estiver sem internet, a presença fica salva no celular e é enviada sozinha depois.</string>
+    <string name="escanear_qr">Escanear QR Code</string>
+    <string name="aponte_para_qr">Aponte para o QR Code do encontro</string>
+    <string name="registrando_presenca">Registrando presença…</string>
+    <string name="camera_negada">Sem acesso à câmera não é possível ler o QR Code. Você pode liberar nas configurações do aparelho.</string>
+    <string name="status_online">Você está online</string>
+    <string name="status_offline">Você está offline — a presença será enviada depois</string>
+
+    <!-- Histórico de presença -->
+    <string name="titulo_historico">Histórico de presença</string>
+    <string name="historico_vazio">Você ainda não tem presenças registradas.</string>
+    <string name="selo_confirmada">Confirmada</string>
+
+    <!-- Certificados -->
+    <string name="titulo_certificados">Meus certificados</string>
+    <string name="certificados_vazio">Você ainda não tem certificados. Eles são emitidos quando você conclui um curso com a frequência mínima.</string>
+    <string name="carga_horaria_formato">%1$d horas</string>
+    <string name="emitido_em">Emitido em %1$s</string>
+    <string name="selo_abrir">Abrir</string>
+    <string name="certificado_sem_arquivo">Este certificado ainda não tem arquivo disponível.</string>
+    <string name="certificado_precisa_internet">Abrir o certificado precisa de internet: o arquivo fica no servidor da organização.</string>
+    <string name="erro_abrir_certificado">Não foi possível abrir o certificado neste aparelho.</string>
+
+    <!-- Comunicados -->
+    <string name="titulo_mensagens">Comunicados</string>
+    <string name="mensagens_vazio">Nenhum comunicado por enquanto.</string>
+
+    <!-- Notificações -->
+    <string name="titulo_notificacoes">Notificações</string>
+    <string name="notificacoes_vazio">Nenhuma notificação por enquanto.</string>
+    <string name="marcar_todas_lidas">Marcar todas como lidas</string>
+    <string name="tipo_curso_novo">Novo curso</string>
+    <string name="tipo_agenda">Agenda</string>
+    <string name="tipo_certificado">Certificado</string>
+    <string name="tipo_mensagem">Comunicado</string>
+
+    <!-- Card digital -->
+    <string name="titulo_card">Card digital</string>
+    <string name="valido_desde">Válido desde %1$s</string>
+    <string name="card_offline">Sem internet: mostrando a última versão salva no celular.</string>
+
+    <!-- Perfil -->
+    <string name="titulo_perfil">Meu perfil</string>
+    <string name="perfil_dados_fixos">Nome e e-mail são definidos no cadastro da organização. Fale com a equipe para alterá-los.</string>
+    <string name="hint_escola">Escola</string>
+    <string name="hint_serie">Série</string>
+    <string name="hint_cidade">Cidade</string>
+    <string name="salvar">Salvar alterações</string>
+    <string name="perfil_salvo">Perfil atualizado.</string>
+    <string name="erro_salvar_perfil">Não foi possível salvar as alterações.</string>
+    <string name="perfil_precisa_internet">Editar o perfil precisa de internet, para não criar duas versões diferentes dos seus dados.</string>
+
+    <!-- Teste de perfil -->
+    <string name="titulo_teste_perfil">Teste de perfil</string>
+    <string name="teste_precisa_internet">O teste de perfil precisa de internet para ser respondido.</string>
+    <string name="teste_indisponivel">O teste não está disponível no momento.</string>
+    <string name="ver_resultado">Ver meu resultado</string>
+    <string name="pergunta_numero">Pergunta %1$d de %2$d</string>
+    <string name="resultado_perfil">Seu perfil: %1$s</string>
+    <string name="aviso_orientacao">Este resultado tem finalidade de orientação educacional e profissional e não é um diagnóstico psicológico.</string>
+    <string name="erro_enviar_respostas">Não foi possível enviar suas respostas.</string>
+
+    <!-- Chat -->
+    <string name="titulo_chat">Tirar dúvidas</string>
+    <string name="chat_vazio">Mande sua dúvida para a equipe da Próxima Etapa.</string>
+    <string name="hint_mensagem">Escreva sua dúvida</string>
+    <string name="enviar_mensagem">Enviar mensagem</string>
+    <string name="chat_offline">O chat precisa de internet: sua pergunta precisa chegar à equipe para ser respondida.</string>
+    <string name="chat_precisa_internet">Conecte-se à internet para enviar sua dúvida.</string>
+    <string name="erro_enviar_mensagem">Não foi possível enviar a mensagem.</string>
+
+    <!-- Sair -->
+    <string name="sair">Sair</string>
+    <string name="confirmar_sair">Deseja sair da sua conta? Os dados salvos neste aparelho serão apagados.</string>
+
+    <!-- Acessibilidade -->
+    <string name="desc_item_destacado">Item que precisa de atenção</string>
+
+    <!-- Quantidades: o português muda a frase entre singular e plural, por
+         isso estas ficam em <plurals> e não em <string> com %d solto. -->
+    <plurals name="presencas_pendentes">
+        <item quantity="one">%d presença aguardando conexão para ser enviada.</item>
+        <item quantity="other">%d presenças aguardando conexão para serem enviadas.</item>
+    </plurals>
+
+    <plurals name="presencas_enviadas">
+        <item quantity="one">%d presença foi enviada para a organização.</item>
+        <item quantity="other">%d presenças foram enviadas para a organização.</item>
+    </plurals>
+
+    <plurals name="sair_com_pendentes">
+        <item quantity="one">Você tem %d presença que ainda não foi enviada. Se sair agora, ela será perdida. Deseja sair mesmo assim?</item>
+        <item quantity="other">Você tem %d presenças que ainda não foram enviadas. Se sair agora, elas serão perdidas. Deseja sair mesmo assim?</item>
+    </plurals>
+
+    <plurals name="total_presencas">
+        <item quantity="one">%d presença registrada</item>
+        <item quantity="other">%d presenças registradas</item>
+    </plurals>
+
+    <plurals name="cursos_ativos">
+        <item quantity="one">%d curso ativo</item>
+        <item quantity="other">%d cursos ativos</item>
+    </plurals>
+
+    <plurals name="faltam_perguntas">
+        <item quantity="one">Falta responder %d pergunta.</item>
+        <item quantity="other">Faltam responder %d perguntas.</item>
+    </plurals>
+</resources>

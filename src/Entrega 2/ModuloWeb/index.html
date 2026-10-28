@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Próxima Etapa — Painel da equipe</title>
+<meta name="description" content="Módulo web administrativo do app Próxima Etapa: cursos, encontros, presença por QR Code, certificados e comunicados.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231E6F5C'/><path d='M9 21V11h5.4a3.3 3.3 0 0 1 0 6.6H12V21z' fill='%23fff'/></svg>">
+<link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+<a class="pular-link" href="#conteudo">Pular para o conteúdo</a>
+
+<!-- ───────────────────────── Login ───────────────────────── -->
+<div id="tela-login" class="login" hidden>
+  <section class="login__marca">
+    <p class="login__ong">Instituto Próxima Etapa</p>
+    <h1 class="login__titulo">Painel da equipe</h1>
+    <p class="login__texto">
+      Aqui a equipe alimenta o aplicativo dos alunos: abre cursos, marca encontros,
+      gera o QR Code da presença, acompanha a frequência e emite certificados.
+    </p>
+    <dl class="login__numeros">
+      <div><dt>Cursos gratuitos</dt><dd>para jovens da rede pública</dd></div>
+      <div><dt>Presença por QR Code</dt><dd>conferida no encontro</dd></div>
+      <div><dt>Certificado</dt><dd>a partir de 75% de frequência</dd></div>
+    </dl>
+  </section>
+
+  <section class="login__acesso">
+    <form id="form-login" class="formulario" novalidate>
+      <h2 class="login__entrar">Entrar</h2>
+
+      <div class="campo">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" name="email" autocomplete="username" required>
+      </div>
+
+      <div class="campo">
+        <label for="login-senha">Senha</label>
+        <input type="password" id="login-senha" name="senha" autocomplete="current-password" required>
+      </div>
+
+      <p id="login-erro" class="aviso aviso--erro" hidden></p>
+
+      <button type="submit" class="botao botao--principal botao--largo" id="login-enviar">Entrar no painel</button>
+
+      <!-- Protótipo acadêmico: as credenciais ficam à vista para a banca testar. -->
+      <div class="demo">
+        <p class="demo__titulo">Acesso de demonstração</p>
+        <p class="demo__linha"><span>E-mail</span><code>admin@proximaetapa.org.br</code></p>
+        <p class="demo__linha"><span>Senha</span><code>123456</code></p>
+        <button type="button" class="botao botao--texto" id="login-preencher">Preencher automaticamente</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<!-- ───────────────────────── Painel ───────────────────────── -->
+<div id="app" class="app" hidden>
+  <nav class="rail" aria-label="Seções do painel">
+    <div class="rail__marca">
+      <span class="rail__sigla" aria-hidden="true">PE</span>
+      <span class="rail__nome">Próxima Etapa<small>painel da equipe</small></span>
+    </div>
+
+    <ul class="rail__lista">
+      <li><a href="#/painel" data-secao="painel">Painel</a></li>
+      <li><a href="#/cursos" data-secao="cursos">Cursos e encontros</a></li>
+      <li><a href="#/alunos" data-secao="alunos">Alunos</a></li>
+      <li><a href="#/comunicados" data-secao="comunicados">Comunicados</a></li>
+      <li><a href="#/certificados" data-secao="certificados">Certificados</a></li>
+      <li><a href="#/chat" data-secao="chat">Dúvidas dos alunos</a></li>
+    </ul>
+
+    <div class="rail__rodape">
+      <p class="rail__admin" id="rail-admin"></p>
+      <button type="button" class="botao botao--saida" id="botao-sair">Sair</button>
+    </div>
+  </nav>
+
+  <main id="conteudo" class="conteudo" tabindex="-1">
+    <!-- as telas são desenhadas aqui pelo roteador -->
+  </main>
+</div>
+
+<!-- Tela de projeção do QR Code: ocupa o monitor inteiro, sem a navegação. -->
+<div id="tela-projecao" class="projecao" hidden></div>
+
+<!-- Mensagens curtas de retorno das ações -->
+<div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+
+<!-- Diálogo único reaproveitado por formulários e confirmações -->
+<dialog id="dialogo" class="dialogo" aria-labelledby="dialogo-titulo"></dialog>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

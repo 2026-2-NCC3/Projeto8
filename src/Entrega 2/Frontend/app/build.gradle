@@ -1,0 +1,68 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'br.org.proximaetapa.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "br.org.proximaetapa.app"
+        minSdk 24
+        targetSdk 34
+        versionCode 2
+        versionName "2.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Endereço da API publicada no Render (Entrega 2).
+        // Para apontar para um backend local rodando na própria máquina, use
+        // "http://10.0.2.2:3000/api/" (o emulador enxerga o localhost do host
+        // por esse IP) e habilite usesCleartextTraffic no manifesto.
+        buildConfigField "String", "API_BASE_URL", '"https://proxima-etapa-api.onrender.com/api/"'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.activity:activity:1.9.2'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.4'
+
+    // Rede e JSON (RFM15 - sincronização com a API)
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
+
+    // QR Code (RFM06 - presença por QR Code)
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+
+    // Persistência local (RFM15 - banco SQLite no próprio aparelho)
+    implementation 'androidx.room:room-runtime:2.6.1'
+    annotationProcessor 'androidx.room:room-compiler:2.6.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+}

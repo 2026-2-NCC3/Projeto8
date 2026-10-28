@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Necessária a partir do Android 13 para mostrar avisos na barra de status. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- O app funciona sem câmera (só não dá para escanear o QR Code),
+         então a câmera não é obrigatória para instalar. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <application
+        android:name=".ProximaEtapaApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ProximaEtapa"
+        android:usesCleartextTraffic="false">
+
+        <activity
+            android:name=".ui.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.HomeActivity" android:exported="false" />
+        <activity android:name=".ui.CursosActivity" android:exported="false" />
+        <activity android:name=".ui.CursoDetalheActivity" android:exported="false" />
+        <activity android:name=".ui.AgendaActivity" android:exported="false" />
+        <activity android:name=".ui.CheckinActivity" android:exported="false" />
+        <activity android:name=".ui.HistoricoActivity" android:exported="false" />
+        <activity android:name=".ui.CardActivity" android:exported="false" />
+        <activity android:name=".ui.CertificadosActivity" android:exported="false" />
+        <activity android:name=".ui.TestePerfilActivity" android:exported="false" />
+        <activity android:name=".ui.MensagensActivity" android:exported="false" />
+        <activity android:name=".ui.ChatActivity" android:exported="false" />
+        <activity android:name=".ui.NotificacoesActivity" android:exported="false" />
+        <activity android:name=".ui.PerfilActivity" android:exported="false" />
+
+        <!-- Tela de câmera do leitor de QR Code (ZXing).
+             stateAlwaysHidden evita o teclado abrir sobre a câmera. -->
+        <activity
+            android:name=".ui.CapturaQrActivity"
+            android:exported="false"
+            android:screenOrientation="fullSensor"
+            android:stateNotNeeded="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+    </application>
+</manifest>

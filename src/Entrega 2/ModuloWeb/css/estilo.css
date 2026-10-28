@@ -1,0 +1,696 @@
+/* =========================================================================
+   Próxima Etapa — painel da equipe
+   -------------------------------------------------------------------------
+   A identidade vem do app Android: verde #1E6F5C como cor primária,
+   #154F42 na navegação e âmbar #F2A93B como destaque. Aqui o âmbar é
+   reservado para duas coisas — o que está acontecendo agora (encontro,
+   QR Code) e a meta de 75% de frequência. Fora disso, nada é colorido
+   só para enfeitar.
+
+   Estrutura visual: a página é feita de FILETES e BORDAS, não de cartões
+   com sombra. Sombra aparece só no que flutua (diálogo e avisos).
+   ========================================================================= */
+
+:root {
+  --verde:          #1E6F5C;
+  --verde-escuro:   #154F42;
+  --verde-fundo:    #0F3A30;
+  --verde-claro:    #E4EFE9;
+  --tinta:          #11322A;
+  --texto-suave:    #557267;
+  --ambar:          #F2A93B;
+  --ambar-fundo:    #FDF1DC;
+  --ambar-tinta:    #7A5110;
+  --brasa:          #9E3B22;
+  --brasa-fundo:    #F9E9E4;
+  --papel:          #F0F4F1;
+  --superficie:     #FFFFFF;
+  --linha:          #D6E2DA;
+  --linha-forte:    #B4CABE;
+
+  /* Charter/Cambria/Georgia são serifas de tela presentes em Mac, Windows e
+     Linux. Sem CDN: a tipografia precisa funcionar offline, na rede da
+     faculdade e no notebook da apresentação. */
+  --serif: Charter, "Bitstream Charter", Cambria, Georgia, "Liberation Serif", serif;
+  --sans: "Segoe UI", system-ui, -apple-system, Inter, "Liberation Sans", Arial, sans-serif;
+
+  --raio:   10px;
+  --raio-p: 5px;
+}
+
+* { box-sizing: border-box; }
+
+/* O atributo `hidden` precisa vencer qualquer `display` declarado em classe.
+   Sem isto, a tela de projeção (display:flex) continuaria esticada por cima
+   do painel, invisível, interceptando todos os cliques. */
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--verde-escuro);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Espaçamento vertical é sempre declarado por quem precisa dele. Sem este
+   zero, a margem padrão do parágrafo cresce junto com a fonte e descola o
+   número grande do rótulo que o explica. */
+p { margin: 0; }
+
+a { color: var(--verde); }
+
+/* Foco sempre visível, inclusive sobre o verde escuro da navegação. */
+:focus-visible {
+  outline: 3px solid var(--ambar);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.pular-link {
+  position: absolute;
+  left: 12px; top: -60px;
+  z-index: 100;
+  background: var(--superficie);
+  color: var(--verde-escuro);
+  padding: 10px 16px;
+  border-radius: var(--raio-p);
+  font-weight: 600;
+  transition: top .15s;
+}
+.pular-link:focus { top: 12px; }
+
+/* =========================================================================
+   Botões, campos e etiquetas
+   ========================================================================= */
+
+/* Serve a <button> e a <a>: vários "botões" do painel são links de verdade
+   (#/cursos/3), para abrir em outra aba e funcionar com o teclado. */
+.botao {
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: var(--raio-p);
+  padding: 9px 16px;
+  cursor: pointer;
+  background: none;
+  color: var(--verde-escuro);
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+.botao:disabled { opacity: .55; cursor: progress; }
+
+.botao--principal { background: var(--verde); color: #fff; }
+.botao--principal:hover:not(:disabled) { background: var(--verde-escuro); }
+
+.botao--contorno { border-color: var(--linha-forte); background: var(--superficie); }
+.botao--contorno:hover:not(:disabled) { border-color: var(--verde); color: var(--verde); }
+
+.botao--perigo { color: var(--brasa); border-color: #E2C3B9; background: var(--superficie); }
+.botao--perigo:hover:not(:disabled) { background: var(--brasa); border-color: var(--brasa); color: #fff; }
+
+.botao--texto { padding: 4px 0; color: var(--verde); text-decoration: underline; }
+.botao--largo { width: 100%; }
+.botao--pequeno { padding: 6px 11px; font-size: 13.5px; }
+
+.botao--saida {
+  border-color: rgba(255,255,255,.3);
+  color: #DCEBE3;
+  width: 100%;
+}
+.botao--saida:hover { background: rgba(255,255,255,.12); }
+
+.campo { margin-bottom: 16px; }
+.campo label,
+.campo__rotulo {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  margin-bottom: 5px;
+}
+.campo input,
+.campo select,
+.campo textarea {
+  font: inherit;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--linha-forte);
+  border-radius: var(--raio-p);
+  background: var(--superficie);
+  color: var(--tinta);
+}
+.campo textarea { min-height: 104px; resize: vertical; line-height: 1.5; }
+.campo input:focus, .campo select:focus, .campo textarea:focus { border-color: var(--verde); }
+.campo input:disabled, .campo select:disabled, .campo textarea:disabled {
+  background: var(--papel);
+  color: var(--texto-suave);
+  cursor: not-allowed;
+}
+.campo__dica { font-size: 13px; color: var(--texto-suave); margin: 5px 0 0; }
+
+.campo-duplo { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+
+.opcoes { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 6px; }
+.opcoes label {
+  display: flex; align-items: center; gap: 7px;
+  font-weight: 500; color: var(--tinta); margin: 0;
+  font-size: 15px;
+}
+.opcoes input { width: auto; }
+
+/* Etiquetas de estado — a cor diz o que está acontecendo, nunca decora. */
+.etiqueta {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+  white-space: nowrap;
+}
+.etiqueta--alerta { background: var(--ambar-fundo); color: var(--ambar-tinta); }
+.etiqueta--risco  { background: var(--brasa-fundo); color: var(--brasa); }
+.etiqueta--neutra { background: #E7EDE9; color: var(--texto-suave); }
+
+/* =========================================================================
+   Login
+   ========================================================================= */
+
+.login { display: grid; grid-template-columns: 1.05fr 1fr; min-height: 100vh; }
+
+.login__marca {
+  background: var(--verde-escuro);
+  color: #E7F1EC;
+  padding: 64px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.login__ong {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: var(--ambar);
+  font-weight: 600;
+}
+.login__titulo {
+  font-size: clamp(38px, 5vw, 56px);
+  color: #fff;
+  letter-spacing: -.015em;
+  margin-bottom: 18px;
+}
+.login__texto { max-width: 42ch; font-size: 17px; line-height: 1.6; margin: 0 0 40px; color: #CFE2D9; }
+
+.login__numeros { margin: 0; display: grid; gap: 14px; max-width: 42ch; }
+.login__numeros > div { border-top: 1px solid rgba(255,255,255,.18); padding-top: 12px; }
+.login__numeros dt { font-family: var(--serif); font-size: 19px; color: #fff; }
+.login__numeros dd { margin: 1px 0 0; font-size: 14.5px; color: #B9D2C7; }
+
+.login__acesso { display: flex; align-items: center; justify-content: center; padding: 48px 32px; }
+.login__acesso .formulario { width: 100%; max-width: 380px; }
+.login__entrar { font-size: 27px; margin-bottom: 26px; }
+
+.demo {
+  margin-top: 26px;
+  border: 1px dashed var(--linha-forte);
+  border-radius: var(--raio);
+  padding: 16px 18px;
+  background: var(--superficie);
+}
+.demo__titulo { margin: 0 0 10px; font-weight: 700; font-size: 14px; color: var(--verde-escuro); }
+.demo__linha {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  margin: 0 0 6px; font-size: 14px; color: var(--texto-suave);
+}
+.demo__linha code { font-size: 13.5px; color: var(--tinta); background: var(--papel); padding: 2px 6px; border-radius: 4px; }
+
+/* =========================================================================
+   Estrutura do painel: trilho de navegação + conteúdo
+   ========================================================================= */
+
+.app { display: grid; grid-template-columns: 236px 1fr; min-height: 100vh; }
+
+.rail {
+  background: var(--verde-escuro);
+  color: #D7E7DF;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.rail__marca { display: flex; gap: 11px; align-items: center; padding: 0 6px; }
+.rail__sigla {
+  background: var(--ambar);
+  color: var(--verde-fundo);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: grid; place-items: center;
+  flex: none;
+}
+.rail__nome {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: #fff;
+  line-height: 1.15;
+  display: block;
+}
+.rail__nome small { display: block; font-family: var(--sans); font-size: 12.5px; color: #9CC0B2; font-weight: 400; }
+
+/* align-content: start impede que o grid estique os itens para preencher a
+   altura da tela — sem isso, seis links viram seis faixas soltas. */
+.rail__lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; align-content: start; flex: 1; }
+.rail__lista a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: var(--raio-p);
+  color: #D7E7DF;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14.5px;
+}
+.rail__lista a:hover { background: rgba(255,255,255,.09); color: #fff; }
+.rail__lista a[aria-current="page"] {
+  background: var(--superficie);
+  color: var(--verde-escuro);
+  font-weight: 700;
+}
+
+.rail__rodape { border-top: 1px solid rgba(255,255,255,.16); padding-top: 14px; }
+.rail__admin { margin: 0 0 10px; font-size: 13px; color: #9CC0B2; padding: 0 2px; }
+.rail__admin strong { display: block; color: #fff; font-size: 14px; font-weight: 600; }
+
+.conteudo { padding: 30px 34px 72px; max-width: 1200px; }
+.conteudo:focus { outline: none; }
+
+/* Cabeçalho de cada tela */
+.topo { margin-bottom: 26px; display: flex; gap: 18px; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; }
+.topo h1 { font-size: 31px; letter-spacing: -.01em; }
+.topo p { margin: 6px 0 0; color: var(--texto-suave); max-width: 68ch; }
+.topo__acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.voltar {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-weight: 600;
+}
+.voltar:hover { color: var(--verde); text-decoration: underline; }
+
+/* Painéis: borda, sem sombra. */
+.painel {
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  overflow: hidden;
+}
+.painel__cabeca {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--linha);
+}
+.painel__cabeca h2 { font-size: 19px; }
+.painel__cabeca p { margin: 2px 0 0; font-size: 13.5px; color: var(--texto-suave); }
+.painel__corpo { padding: 20px; }
+
+.grade-dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+
+/* =========================================================================
+   Painel inicial — a frequência média é o elemento forte da tela
+   ========================================================================= */
+
+.prestacao {
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-left: 5px solid var(--verde);
+  border-radius: var(--raio);
+  padding: 26px 28px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: minmax(170px, auto) 1fr;
+  gap: 10px 38px;
+  align-items: center;
+}
+.prestacao--abaixo { border-left-color: var(--brasa); }
+
+.prestacao__figura {
+  font-family: var(--serif);
+  font-size: 92px;
+  line-height: .9;
+  font-weight: 700;
+  color: var(--verde-escuro);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.prestacao--abaixo .prestacao__figura { color: var(--brasa); }
+.prestacao__figura span { font-size: 40px; }
+.prestacao__rotulo { font-size: 15px; color: var(--texto-suave); margin: 8px 0 0; font-weight: 600; }
+
+.prestacao__leitura { font-size: 17px; line-height: 1.55; margin: 0 0 18px; max-width: 58ch; }
+
+/* Trilha com a marca da meta de 75% */
+.trilha { position: relative; height: 13px; background: var(--papel); border: 1px solid var(--linha); border-radius: 999px; }
+.trilha__preenchido { position: absolute; inset: 0 auto 0 0; background: var(--verde); border-radius: 999px; }
+.prestacao--abaixo .trilha__preenchido { background: var(--brasa); }
+.trilha__meta { position: absolute; top: -6px; bottom: -6px; width: 3px; background: var(--ambar); border-radius: 2px; }
+.trilha__legenda { display: flex; justify-content: space-between; font-size: 13px; color: var(--texto-suave); margin-top: 8px; }
+.trilha__legenda strong { color: var(--ambar-tinta); font-weight: 700; }
+
+/* Contadores: faixa com filetes, não seis caixinhas iguais. */
+.contadores {
+  display: grid;
+  /* auto-fit: a faixa serve tanto aos 5 números do painel quanto aos 3 da
+     ficha do aluno, e quebra sozinha no notebook menor. */
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  margin: 0 0 20px;
+  overflow: hidden;
+}
+/* As margens negativas empurram os filetes das pontas para debaixo da borda
+   do bloco, então só sobram as divisórias internas. */
+.contadores > div {
+  padding: 16px 20px;
+  border-left: 1px solid var(--linha);
+  border-top: 1px solid var(--linha);
+  margin: -1px 0 0 -1px;
+}
+.contadores dt { font-size: 13.5px; color: var(--texto-suave); }
+.contadores dd {
+  margin: 2px 0 0;
+  font-family: var(--serif);
+  font-size: 29px;
+  font-weight: 700;
+  color: var(--verde-escuro);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* =========================================================================
+   Listas em filetes (cursos, alunos, elegíveis, comunicados…)
+   ========================================================================= */
+
+.lista { list-style: none; margin: 0; padding: 0; }
+.lista > li {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--linha);
+  flex-wrap: wrap;
+}
+.lista > li:first-child { border-top: none; }
+.lista > li:hover { background: #FAFCFB; }
+.lista--clicavel > li { cursor: pointer; }
+
+.lista__principal { min-width: 0; flex: 1 1 260px; }
+.lista__titulo { font-family: var(--serif); font-size: 17.5px; font-weight: 700; color: var(--verde-escuro); margin: 0; }
+.lista__titulo a { color: inherit; text-decoration: none; }
+.lista__titulo a:hover { text-decoration: underline; }
+/* A linha de apoio de cada item é escrita como frase ("Tecnologia, 20 h, de
+   01/09 a 20/10"), e não como rótulos colados por pontos — lê melhor em voz
+   alta e em leitor de tela. */
+.lista__meta { margin: 3px 0 0; font-size: 13.5px; color: var(--texto-suave); }
+.lista__acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.lista__numero {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--verde-escuro);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.lista__numero small { display: block; font-family: var(--sans); font-size: 12.5px; font-weight: 400; color: var(--texto-suave); }
+
+/* Barra fina de ocupação / leitura */
+.barra { height: 7px; background: var(--papel); border-radius: 999px; overflow: hidden; border: 1px solid var(--linha); }
+.barra > span { display: block; height: 100%; background: var(--verde); }
+.barra--cheia > span { background: var(--ambar); }
+.ocupacao { flex: 0 1 190px; min-width: 130px; }
+.ocupacao__texto { display: flex; justify-content: space-between; font-size: 13px; color: var(--texto-suave); margin-bottom: 5px; }
+
+/* Bloco de data dos encontros */
+.data-bloco {
+  flex: none;
+  width: 52px;
+  text-align: center;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio-p);
+  padding: 5px 0 6px;
+  background: var(--papel);
+}
+.data-bloco strong { display: block; font-family: var(--serif); font-size: 21px; line-height: 1; color: var(--verde-escuro); }
+.data-bloco span { font-size: 12px; color: var(--texto-suave); }
+
+/* =========================================================================
+   Estados: carregando, vazio, erro
+   ========================================================================= */
+
+.estado { padding: 52px 24px; text-align: center; color: var(--texto-suave); }
+.estado h3 { font-size: 19px; margin-bottom: 6px; color: var(--verde-escuro); }
+.estado p { margin: 0 auto 16px; max-width: 46ch; }
+
+.carregando { display: flex; align-items: center; justify-content: center; gap: 11px; padding: 52px 24px; color: var(--texto-suave); }
+.carregando::before {
+  content: "";
+  width: 17px; height: 17px;
+  border: 2.5px solid var(--linha-forte);
+  border-top-color: var(--verde);
+  border-radius: 50%;
+  animation: girar .8s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+.aviso { border-radius: var(--raio-p); padding: 11px 14px; font-size: 14.5px; margin: 0 0 16px; }
+.aviso--erro { background: var(--brasa-fundo); color: var(--brasa); border: 1px solid #E8CCC3; }
+.aviso--info { background: var(--verde-claro); color: var(--verde-escuro); border: 1px solid #C6DED3; }
+
+/* =========================================================================
+   Avisos flutuantes (toasts) e diálogo
+   ========================================================================= */
+
+/* pointer-events: none deixa o clique atravessar a pilha de avisos — ela fica
+   justamente sobre o canto onde ficam os botões de enviar. */
+.avisos {
+  position: fixed; right: 20px; bottom: 20px; z-index: 60;
+  display: grid; gap: 10px;
+  max-width: min(380px, calc(100vw - 40px));
+  pointer-events: none;
+}
+.avisos .toast { pointer-events: auto; }
+/* Durante a projeção o telão está na frente da turma: nenhum aviso de
+   bastidor deve aparecer lá. */
+#tela-projecao:not([hidden]) ~ .avisos { display: none; }
+.toast {
+  background: var(--verde-escuro);
+  color: #fff;
+  padding: 13px 17px;
+  border-radius: var(--raio);
+  box-shadow: 0 10px 28px rgba(17,50,42,.3);
+  font-size: 14.5px;
+}
+.toast--erro { background: var(--brasa); }
+.toast strong { display: block; margin-bottom: 2px; }
+.toast code { display: block; margin-top: 6px; font-size: 12px; word-break: break-all; color: #CFE2D9; }
+
+.dialogo {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  width: min(560px, calc(100vw - 32px));
+  box-shadow: 0 24px 64px rgba(17,50,42,.32);
+  color: var(--tinta);
+  background: var(--superficie);
+}
+.dialogo::backdrop { background: rgba(15,58,48,.55); }
+.dialogo__cabeca { padding: 20px 24px 0; }
+.dialogo__cabeca h2 { font-size: 23px; }
+.dialogo__cabeca p { margin: 7px 0 0; color: var(--texto-suave); }
+.dialogo__corpo { padding: 20px 24px; max-height: 64vh; overflow-y: auto; }
+.dialogo__rodape {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 15px 24px;
+  border-top: 1px solid var(--linha);
+  background: #FAFCFB;
+  flex-wrap: wrap;
+}
+
+/* =========================================================================
+   Chamada (lista de presença)
+   ========================================================================= */
+
+.chamada-resumo {
+  display: flex; gap: 34px; align-items: center; flex-wrap: wrap;
+  padding: 22px 24px;
+  background: var(--superficie);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  margin-bottom: 20px;
+}
+.chamada-resumo__figura {
+  font-family: var(--serif);
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--verde-escuro);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.chamada-resumo__figura small { font-size: 20px; color: var(--texto-suave); font-weight: 400; }
+.chamada-resumo__rotulo { font-size: 14px; color: var(--texto-suave); margin: 6px 0 0; }
+.chamada-resumo__barra { flex: 1 1 240px; min-width: 200px; }
+
+.presenca { display: flex; align-items: center; gap: 12px; }
+.presenca__marca {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 14px; font-weight: 700;
+  flex: none;
+}
+.presenca__marca--sim { background: var(--verde); color: #fff; }
+.presenca__marca--nao { background: var(--papel); color: var(--texto-suave); border: 1px solid var(--linha-forte); }
+.ausente .lista__titulo { color: var(--texto-suave); }
+
+/* =========================================================================
+   Projeção do QR Code — usada ao vivo, no telão do encontro
+   ========================================================================= */
+
+.projecao {
+  position: fixed;
+  inset: 0;
+  background: var(--verde-escuro);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3vh 4vw;
+  gap: 2.2vh;
+  overflow-y: auto;
+  z-index: 40;
+}
+.projecao__curso { font-size: clamp(22px, 3.4vw, 46px); color: #fff; margin: 0; }
+.projecao__encontro { margin: 0; font-size: clamp(15px, 1.7vw, 23px); color: #AECCBF; }
+.projecao__placa {
+  background: #fff;
+  padding: clamp(14px, 2vw, 26px);
+  border-radius: 16px;
+  line-height: 0;
+}
+.projecao__placa svg { width: clamp(220px, 42vh, 430px); height: auto; display: block; }
+.projecao__instrucao { margin: 0; font-size: clamp(15px, 1.7vw, 22px); color: #DCEBE3; max-width: 34ch; }
+.projecao__codigo {
+  font-family: var(--serif);
+  letter-spacing: .14em;
+  font-size: clamp(17px, 2.1vw, 27px);
+  color: var(--ambar);
+  margin: 0;
+}
+.projecao__acoes { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 1vh; }
+.projecao .botao--contorno { background: transparent; color: #fff; border-color: rgba(255,255,255,.45); }
+.projecao .botao--contorno:hover { background: rgba(255,255,255,.14); color: #fff; }
+.projecao .carregando, .projecao .estado { color: #AECCBF; }
+.projecao .estado h3 { color: #fff; }
+
+/* =========================================================================
+   Chat de dúvidas
+   ========================================================================= */
+
+.chat { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
+.chat__conversas .lista > li { padding: 13px 16px; }
+.chat__conversas .lista__titulo { font-size: 16px; }
+.chat__conversas li[aria-current="true"] { background: var(--verde-claro); }
+.chat__trecho {
+  margin: 3px 0 0;
+  font-size: 13.5px;
+  color: var(--texto-suave);
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.conversa { display: flex; flex-direction: column; min-height: 440px; }
+.conversa__mensagens { padding: 20px; display: grid; gap: 14px; flex: 1; overflow-y: auto; max-height: 56vh; }
+.balao { max-width: 76%; padding: 11px 15px; border-radius: 14px; font-size: 14.5px; }
+.balao p { margin: 0; }
+.balao time { display: block; font-size: 12px; margin-top: 5px; opacity: .75; }
+.balao--aluno { background: var(--papel); border: 1px solid var(--linha); border-bottom-left-radius: 4px; justify-self: start; }
+.balao--equipe { background: var(--verde); color: #fff; border-bottom-right-radius: 4px; justify-self: end; }
+.balao--equipe time { color: #D4E8DF; }
+
+.conversa__responder { border-top: 1px solid var(--linha); padding: 14px 20px; display: flex; gap: 10px; align-items: flex-end; }
+.conversa__responder .campo { flex: 1; margin: 0; }
+.conversa__responder textarea { min-height: 54px; }
+
+/* =========================================================================
+   Busca
+   ========================================================================= */
+
+.busca { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
+.busca .campo { margin: 0; flex: 1 1 300px; max-width: 420px; }
+
+/* =========================================================================
+   Responsivo: notebook, tablet e projetor
+   ========================================================================= */
+
+@media (max-width: 980px) {
+  .grade-dupla, .chat { grid-template-columns: 1fr; }
+  .login { grid-template-columns: 1fr; }
+  .login__marca { padding: 44px 28px; }
+  .login__numeros { display: none; }
+}
+
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .rail {
+    position: static; height: auto;
+    flex-direction: row; align-items: center; gap: 16px;
+    padding: 12px 16px;
+    overflow-x: auto;
+  }
+  .rail__lista { display: flex; gap: 4px; flex: 1; }
+  .rail__lista a { white-space: nowrap; }
+  .rail__rodape { border: none; padding: 0; display: flex; gap: 10px; align-items: center; }
+  .rail__admin { display: none; }
+  .conteudo { padding: 22px 18px 60px; }
+  .prestacao { grid-template-columns: 1fr; gap: 16px; padding: 22px; }
+  .prestacao__figura { font-size: 70px; }
+  .contadores { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .campo-duplo { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Impressão: só o QR Code vai para o papel, em preto sobre branco. */
+@media print {
+  body { background: #fff; }
+  .app, .avisos, .pular-link, .login { display: none !important; }
+  .projecao { position: static; background: #fff; color: #000; min-height: auto; padding: 0; }
+  .projecao__curso, .projecao__codigo { color: #000; }
+  .projecao__encontro, .projecao__instrucao { color: #333; }
+  .projecao__acoes { display: none; }
+  .projecao__placa { padding: 0; }
+}

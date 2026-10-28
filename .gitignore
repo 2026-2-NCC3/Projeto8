@@ -149,3 +149,7 @@ src/Entrega 1/Frontend/build/
 src/Entrega 1/Frontend/app/build/
 src/Entrega 1/Frontend/local.properties
 *.apk.idsig
+# Banco SQLite gerado pelo seed (não versionar: é recriado a cada deploy)
+*.db
+*.db-shm
+*.db-wal

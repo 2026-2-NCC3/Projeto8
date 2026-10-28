@@ -27,6 +27,55 @@ A solução tem como objetivo facilitar o acompanhamento da jornada educacional 
 O sistema é composto por um aplicativo mobile, uma API REST e um banco de dados integrados, possibilitando a sincronização das informações dos alunos. Conta com registro de presença por QR Code, emissão de certificados, notificações, teste de perfil educacional/profissional e canal de comunicação entre estudantes e a organização.
 <br><br>
 
+## 🚀 Entrega 2 — sistema completo e integrado
+
+O sistema está **no ar**, com os quatro componentes integrados:
+
+| Componente | Onde |
+|---|---|
+| API REST | <https://proxima-etapa-api.onrender.com/api> ([health](https://proxima-etapa-api.onrender.com/api/health)) |
+| Painel web da organização | <https://proxima-etapa-api.onrender.com/> |
+| App Android | código em [`src/Entrega 2/Frontend`](src/Entrega%202/Frontend) · [como gerar o APK](documentos/Entrega%202/Projeto%20Interdisciplinar%20(Aplicativo%20Movel)/COMO-GERAR-O-APK.md) |
+| Banco de dados | SQLite, criado por `db/schema.sql` e populado por `db/seed.js` |
+
+**Credenciais de demonstração** (fictícias, geradas pelo seed):
+aluno `ana.souza@aluno.proximaetapa.org.br` / `123456` ·
+painel `admin@proximaetapa.org.br` / `123456`
+
+### A função principal da etapa: sincronização e presença offline
+
+Os encontros da ONG acontecem em escolas e espaços comunitários onde o sinal
+cai. Por isso o app foi construído **offline primeiro**: nenhuma tela consulta
+a API para se desenhar — todas leem do banco local (Room), e a rede só
+atualiza esse banco em segundo plano.
+
+O aluno escaneia o QR Code do encontro e a presença é gravada **na hora** no
+celular, com o horário real, mesmo sem internet. Quando a conexão volta, a
+fila sobe em ordem de chegada e cada item só é apagado depois que o servidor
+confirma. Cada check-in carrega um identificador único gerado no aparelho, o
+que torna o reenvio seguro: o servidor reconhece a repetição em vez de
+registrar a presença duas vezes.
+
+### Documentos da Entrega 2
+
+| Disciplina | Documento |
+|---|---|
+| Análise Descritiva de Dados | [planilha de dispersão, outliers e probabilidades](documentos/Entrega%202/Analise%20Descritiva%20de%20Dados/) |
+| POO e Estrutura de Dados | [diagrama de classes completo](documentos/Entrega%202/POO%20e%20Estrutura%20de%20Dados/diagrama-classes-completo.md) · [README da UC](src/Entrega%202/POO-EstruturaDados/README.md) |
+| Dispositivos Móveis | [relatório da Entrega 2](documentos/Entrega%202/Dispositivos%20Moveis/relatorio-entrega-2.md) |
+| Projeto Interdisciplinar | [relatório de implantação](documentos/Entrega%202/Projeto%20Interdisciplinar%20(Aplicativo%20Movel)/relatorio-implantacao.md) |
+| Apresentação | [roteiro do pitch de 4 minutos](documentos/Entrega%202/pitch-4-minutos.md) |
+
+### Testes
+
+```bash
+cd "src/Entrega 2/Backend"
+npm install && npm run seed && npm start
+# em outro terminal:
+node test-api.js      # 11 verificações (Entrega 1)
+node test-api-e2.js   # 34 verificações (Entrega 2)
+```
+
 ## 🛠 Estrutura de pastas
 ```
 📂 Projeto8/
@@ -37,7 +86,7 @@ O sistema é composto por um aplicativo mobile, uma API REST e um banco de dados
 ├── 📄 .gitattributes
 │
 ├── 📂 src/
-│   └── 📂 Entrega 1/
+│   ├── 📂 Entrega 1/
 │       ├── 📂 Frontend/                 # Aplicativo Android (Java)
 │       │   ├── 📂 app/
 │       │   │   ├── 📄 build.gradle
@@ -69,6 +118,21 @@ O sistema é composto por um aplicativo mobile, uma API REST e um banco de dados
 │           ├── 📂 src/.../repositorio/   (RepositorioEmMemoria: ArrayList + HashMap)
 │           └── 📂 src/.../app/Main.java  (demonstração de CRUD, busca e ordenação)
 │
+│   └── 📂 Entrega 2/
+│       ├── 📂 Frontend/                 # App Android: Room, QR Code e sincronização
+│       │   └── 📂 app/src/main/java/.../data/local/   (8 entidades Room + fila offline)
+│       ├── 📂 Backend/                  # API + sincronização + rotas administrativas
+│       │   ├── 📄 routes/sync.js         # GET /sync e POST /sync/presencas
+│       │   ├── 📄 routes/admin.js        # painel da ONG, QR Code, certificados
+│       │   └── 📄 test-api-e2.js         # 34 verificações automatizadas
+│       ├── 📂 ModuloWeb/                # Painel web administrativo (HTML/CSS/JS)
+│       └── 📂 POO-EstruturaDados/       # Java puro — entrega final da UC
+│           ├── 📄 README.md              # POO e estruturas de dados (explicação)
+│           ├── 📂 src/.../modelo/        (13 classes + Identificavel + ItemFeed)
+│           ├── 📂 src/.../repositorio/   (ArrayList, HashMap, TreeMap, HashSet, Queue)
+│           ├── 📂 src/.../servico/       (inscrição, presença, certificado, feed)
+│           └── 📂 src/.../app/Main.java  (demonstração executável em 13 seções)
+│
 ├── 📂 documentos/
 │   ├── 📂 Entrega 1/
 │   │   ├── 📂 Analise Descritiva de Dados/
@@ -79,12 +143,73 @@ O sistema é composto por um aplicativo mobile, uma API REST e um banco de dados
 │   │   ├── 📂 Dispositivos Moveis/
 │   │   └── 📂 Projeto Interdisciplinar (Aplicativo Movel)/
 │   └── 📂 Entrega 2/
+│       ├── 📄 pitch-4-minutos.md         (roteiro cronometrado da apresentação)
 │       ├── 📂 Analise Descritiva de Dados/
+│       │   ├── 📄 analise_dispersao_proxima_etapa.xlsx
+│       │   └── 📄 gerar_analise_dispersao.py
 │       ├── 📂 POO e Estrutura de Dados/
+│       │   └── 📄 diagrama-classes-completo.md  (13 classes, Mermaid)
 │       ├── 📂 Dispositivos Moveis/
+│       │   └── 📄 relatorio-entrega-2.md
 │       └── 📂 Projeto Interdisciplinar (Aplicativo Movel)/
+│           ├── 📄 relatorio-implantacao.md
+│           └── 📄 COMO-GERAR-O-APK.md
 │
 └── 📂 imagens/
+```
+
+## 🧩 POO e Estrutura de Dados (UC — Entrega 2)
+
+A entrega da UC **Programação Orientada a Objetos e Estrutura de Dados** fica em
+**[`src/Entrega 2/POO-EstruturaDados`](./src/Entrega%202/POO-EstruturaDados)** —
+veja o **[README da UC](./src/Entrega%202/POO-EstruturaDados/README.md)**, que
+explica em detalhe os princípios de POO e as estruturas de dados empregados, e o
+**[diagrama de classes completo](./documentos/Entrega%202/POO%20e%20Estrutura%20de%20Dados/diagrama-classes-completo.md)**.
+
+É Java puro (sem Android e sem dependências externas), compilado com `javac` e
+executado com `java`. As classes espelham o
+[`schema.sql`](./src/Entrega%202/Backend/db/schema.sql) do projeto.
+
+**Princípios de POO aplicados**
+
+- **Encapsulamento** — atributos privados com invariantes protegidos:
+  `Curso.vagasDisponiveis` só muda por `ocuparVaga()`/`liberarVaga()`;
+  `Aluno.adicionarPontos()` recalcula o nível junto; `Certificado` tem
+  construtor privado e só é criado pela fábrica `emitir()`, que recusa
+  frequência abaixo de 75%.
+- **Herança** — `ItemFeed` é a superclasse abstrata de `Mensagem` e
+  `Notificacao` (título, corpo e data são idênticos nas duas tabelas do banco);
+  `RepositorioAtividade` estende `RepositorioEmMemoria<Atividade>` para
+  acrescentar um índice por QR Code.
+- **Polimorfismo** — `rotuloTipo()` é abstrato em `ItemFeed` e implementado por
+  cada subclasse, o que permite ao feed da tela inicial ser uma única
+  `List<ItemFeed>` ordenada e impressa sem nenhum `instanceof`.
+- **Abstração** — a interface `Identificavel` reduz toda entidade ao que o
+  repositório genérico precisa saber (ela tem um id), eliminando o extrator de
+  id que a Entrega 1 exigia no construtor.
+
+**Estruturas de dados empregadas**
+
+| Estrutura | Onde | Para quê | Custo |
+|---|---|---|---|
+| `ArrayList` + `HashMap` | `RepositorioEmMemoria<T>` | Ordem de cadastro + índice por id | localizar O(1), listar O(n) |
+| `HashMap<String, Atividade>` | `RepositorioAtividade` | Achar o encontro pelo QR Code no check-in | O(1) |
+| `TreeMap` | `AgendaDoAluno`, `TestePerfil` | Agenda sempre cronológica e consultas de intervalo (`tailMap`/`subMap`) | O(log n) |
+| `HashSet` | `ControleDePresenca`, inscrições, certificados | Espelha os `UNIQUE` do banco: sem presença duplicada no mesmo encontro | O(1) |
+| `Queue`/`LinkedList` | `FilaDeSincronizacao` | Check-ins feitos offline sobem em ordem FIFO quando a conexão volta | O(1) |
+| `Comparator` | `Comparadores` | Ranking por pontos, cursos por data, feed por recência | O(n log n) |
+
+**Decisão de estrutura de dados destacada:** indexar cada entidade em duas
+estruturas ao mesmo tempo (lista para a ordem, hash para o id) e estender a
+ideia a um índice por QR Code. Com isso, o check-in — a operação mais
+frequente do app — é resolvido por três verificações O(1) em sequência
+(QR Code existe, aluno inscrito, presença ainda não registrada), e seu tempo
+deixa de depender do tamanho do histórico de presenças.
+
+```bash
+cd "src/Entrega 2/POO-EstruturaDados"
+javac -encoding UTF-8 -d out $(find src -name "*.java")
+java -Dfile.encoding=UTF-8 -cp out br.org.proximaetapa.poo.app.Main
 ```
 
 # Instalação
@@ -161,9 +286,21 @@ Indicado para quem nunca usou o Android Studio.
 
 # Testando no Celular
 
-## Em breve
+O backend está publicado e o APK está no repositório, então dá para instalar
+direto no aparelho, sem Android Studio:
 
-A versão para testes diretamente em dispositivos móveis será disponibilizada futuramente (Entrega 2), junto com o backend publicado em ambiente acessível na nuvem.
+1. Gere o APK da Entrega 2 seguindo
+   [estas instruções](documentos/Entrega%202/Projeto%20Interdisciplinar%20(Aplicativo%20Movel)/COMO-GERAR-O-APK.md)
+   (o APK que está no repositório é o da Entrega 1).
+2. Transfira para o celular e abra o arquivo.
+3. O Android vai pedir autorização para instalar de fora da Play Store —
+   é esperado em um APK de desenvolvimento.
+4. Entre com `ana.souza@aluno.proximaetapa.org.br` / `123456`.
+
+> A primeira abertura pode demorar até 50 segundos: o servidor roda no plano
+> gratuito do Render, que hiberna após alguns minutos sem uso. Depois disso
+> fica rápido — e, como o app guarda tudo localmente, as telas seguintes
+> abrem na hora, inclusive sem internet.
 
 ## 📋 Licença/License
 Este projeto está licenciado sob a licença MIT — veja o arquivo

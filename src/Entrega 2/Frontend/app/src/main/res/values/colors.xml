@@ -1,0 +1,17 @@
+<resources>
+    <color name="primary">#1E6F5C</color>
+    <color name="primary_dark">#154F42</color>
+    <color name="accent">#F2A93B</color>
+    <color name="background">#FAFAFA</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#5F5F5F</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Entrega 2: estados de erro e de aviso.
+         O aviso é âmbar, e não vermelho, porque "offline" e "presença na
+         fila" não são falhas — são situações normais que o app trata. -->
+    <color name="erro">#B3261E</color>
+    <color name="aviso">#9A6700</color>
+    <color name="aviso_fundo">#FFF4E0</color>
+    <color name="aviso_texto">#7A4F01</color>
+</resources>
