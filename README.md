@@ -35,7 +35,7 @@ O sistema está **no ar**, com os quatro componentes integrados:
 |---|---|
 | API REST | <https://proxima-etapa-api.onrender.com/api> ([health](https://proxima-etapa-api.onrender.com/api/health)) |
 | Painel web da organização | <https://proxima-etapa-api.onrender.com/> |
-| App Android | código em [`src/Entrega 2/Frontend`](src/Entrega%202/Frontend) · [como gerar o APK](documentos/Entrega%202/Projeto%20Interdisciplinar%20(Aplicativo%20Movel)/COMO-GERAR-O-APK.md) |
+| App Android | código em [`src/Entrega 2/Frontend`](src/Entrega%202/Frontend) · [APK e instruções de geração](documentos/Entrega%202/Projeto%20Interdisciplinar%20(Aplicativo%20Movel)) |
 | Banco de dados | SQLite, criado por `db/schema.sql` e populado por `db/seed.js` |
 
 **Credenciais de demonstração** (fictícias, geradas pelo seed):
