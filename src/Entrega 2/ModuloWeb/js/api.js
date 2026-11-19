@@ -111,6 +111,9 @@ export const api = {
 
   alunos: (busca = '') => get(`/admin/alunos${busca ? `?busca=${encodeURIComponent(busca)}` : ''}`),
   aluno: (id) => get(`/admin/alunos/${id}`),
+  criarAluno: (dados) => post('/admin/alunos', dados),
+  atualizarAluno: (id, dados) => patch(`/admin/alunos/${id}`, dados),
+  excluirAluno: (id) => remover(`/admin/alunos/${id}`),
 
   mensagens: () => get('/admin/mensagens'),
   enviarMensagem: (dados) => post('/admin/mensagens', dados),

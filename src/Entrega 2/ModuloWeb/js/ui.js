@@ -172,6 +172,9 @@ export function formularioEmDialogo({ titulo, descricao, campos, enviar = 'Salva
     form.append(...campos);
 
     const erroEl = el('p', { classe: 'aviso aviso--erro', hidden: true });
+    // O aviso some assim que a pessoa volta a preencher, para não ficar
+    // acusando um erro que já foi corrigido.
+    form.addEventListener('input', () => { erroEl.hidden = true; });
 
     const d = montarDialogo(titulo, descricao, [erroEl, form], [
       el('button', { classe: 'botao botao--contorno', texto: 'Cancelar', onclick: () => d.close() }),

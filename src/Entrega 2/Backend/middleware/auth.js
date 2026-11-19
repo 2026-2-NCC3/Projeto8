@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const db = require('../db/connection');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-troque-em-producao';
 
@@ -18,6 +19,13 @@ function autenticar(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
     if (payload.tipo && payload.tipo !== 'aluno') {
       return res.status(403).json({ erro: 'Este token não pertence a um aluno.' });
+    }
+    // A assinatura prova que o token foi emitido por este servidor, mas não
+    // que a conta ainda existe. Sem esta checagem, um aluno excluído pela
+    // equipe continuaria acessando o app até o token vencer, 7 dias depois.
+    const existe = db.prepare('SELECT 1 FROM alunos WHERE id = ?').get(payload.alunoId);
+    if (!existe) {
+      return res.status(401).json({ erro: 'Esta conta não existe mais. Fale com a equipe da Próxima Etapa.' });
     }
     req.alunoId = payload.alunoId;
     next();

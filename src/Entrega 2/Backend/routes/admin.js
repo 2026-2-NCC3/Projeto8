@@ -286,6 +286,116 @@ router.get('/admin/alunos/:id', (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Gestão de alunos: cadastrar, editar e excluir
+//
+// O app não tem tela de cadastro aberto, de propósito: a conta do aluno é
+// criada pela organização, quando o jovem entra no programa. Isso garante que
+// só participantes reais acessem o app, e que os dados (muitas vezes de
+// menores de idade) sejam coletados pela ONG, com o consentimento devido.
+// ---------------------------------------------------------------------------
+
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SENHA_MINIMA = 6;
+
+// Custo 10 para senhas novas: o dobro do trabalho do custo 8 usado nos dados
+// fictícios do seed, e dentro da faixa recomendada para produção.
+const CUSTO_BCRYPT = 10;
+
+/** Campos do aluno que podem ser devolvidos. Nunca inclui senha_hash. */
+const CAMPOS_PUBLICOS_ALUNO = 'id, nome, email, escola, serie, cidade, pontos, nivel, criado_em';
+
+/** Limpa e valida o que veio do formulário. Devolve { dados } ou { erro }. */
+function lerCadastroAluno(corpo, { exigirSenha }) {
+  const texto = (v) => (typeof v === 'string' ? v.trim() : '');
+  const dados = {
+    nome: texto(corpo.nome),
+    email: texto(corpo.email).toLowerCase(),
+    escola: texto(corpo.escola) || null,
+    serie: texto(corpo.serie) || null,
+    cidade: texto(corpo.cidade) || null,
+  };
+  const senha = typeof corpo.senha === 'string' ? corpo.senha : '';
+
+  if (!dados.nome) return { erro: 'Informe o nome do aluno.' };
+  if (!EMAIL_VALIDO.test(dados.email)) return { erro: 'Informe um e-mail válido.' };
+  if (exigirSenha && !senha) return { erro: 'Defina uma senha inicial para o aluno.' };
+  if (senha && senha.length < SENHA_MINIMA) {
+    return { erro: `A senha precisa ter pelo menos ${SENHA_MINIMA} caracteres.` };
+  }
+  return { dados, senha };
+}
+
+function emailEmUso(email, ignorarId = null) {
+  return Boolean(db.prepare('SELECT 1 FROM alunos WHERE email = ? AND id IS NOT ?').get(email, ignorarId));
+}
+
+router.post('/admin/alunos', (req, res) => {
+  const { dados, senha, erro } = lerCadastroAluno(req.body, { exigirSenha: true });
+  if (erro) return res.status(400).json({ erro });
+  if (emailEmUso(dados.email)) {
+    return res.status(409).json({ erro: 'Já existe um aluno com este e-mail.' });
+  }
+
+  const info = db.prepare(`
+    INSERT INTO alunos (nome, email, senha_hash, escola, serie, cidade)
+    VALUES (@nome, @email, @senha_hash, @escola, @serie, @cidade)
+  `).run({ ...dados, senha_hash: bcrypt.hashSync(senha, CUSTO_BCRYPT) });
+
+  const aluno = db.prepare(`SELECT ${CAMPOS_PUBLICOS_ALUNO} FROM alunos WHERE id = ?`).get(info.lastInsertRowid);
+  res.status(201).json(aluno);
+});
+
+router.patch('/admin/alunos/:id', (req, res) => {
+  const atual = db.prepare('SELECT id FROM alunos WHERE id = ?').get(req.params.id);
+  if (!atual) return res.status(404).json({ erro: 'Aluno não encontrado.' });
+
+  // Senha em branco na edição significa "manter a atual".
+  const { dados, senha, erro } = lerCadastroAluno(req.body, { exigirSenha: false });
+  if (erro) return res.status(400).json({ erro });
+  if (emailEmUso(dados.email, atual.id)) {
+    return res.status(409).json({ erro: 'Já existe outro aluno com este e-mail.' });
+  }
+
+  db.prepare(`
+    UPDATE alunos SET nome = @nome, email = @email, escola = @escola, serie = @serie, cidade = @cidade
+    WHERE id = @id
+  `).run({ ...dados, id: atual.id });
+
+  // Redefinir a senha é o caminho para o aluno que esqueceu a dele.
+  if (senha) {
+    db.prepare('UPDATE alunos SET senha_hash = ? WHERE id = ?')
+      .run(bcrypt.hashSync(senha, CUSTO_BCRYPT), atual.id);
+  }
+
+  res.json({
+    aluno: db.prepare(`SELECT ${CAMPOS_PUBLICOS_ALUNO} FROM alunos WHERE id = ?`).get(atual.id),
+    senhaRedefinida: Boolean(senha),
+  });
+});
+
+router.delete('/admin/alunos/:id', (req, res) => {
+  const aluno = db.prepare('SELECT id, nome FROM alunos WHERE id = ?').get(req.params.id);
+  if (!aluno) return res.status(404).json({ erro: 'Aluno não encontrado.' });
+
+  // Conta o que vai junto antes de apagar, para o painel dizer à equipe o que
+  // aconteceu. A remoção em si é feita pelo ON DELETE CASCADE do schema:
+  // inscrições, presenças, certificados, resultados de teste, notificações e
+  // conversas do aluno saem junto, sem deixar registro órfão.
+  //
+  // Exclusão definitiva é o que a LGPD pede quando o titular solicita a
+  // eliminação dos próprios dados.
+  const contar = (tabela) => db.prepare(`SELECT COUNT(*) AS t FROM ${tabela} WHERE aluno_id = ?`).get(aluno.id).t;
+  const removidos = {
+    inscricoes: contar('inscricoes'),
+    presencas: contar('presencas'),
+    certificados: contar('certificados'),
+  };
+
+  db.prepare('DELETE FROM alunos WHERE id = ?').run(aluno.id);
+  res.json({ ok: true, nome: aluno.nome, removidos });
+});
+
+// ---------------------------------------------------------------------------
 // Comunicados e notificações
 // ---------------------------------------------------------------------------
 function notificarTodos(tipo, titulo, corpo, mensagemId = null) {

@@ -7,9 +7,106 @@
  */
 
 import { api } from '../api.js';
-import { el, comEstados, vazio, plural, dataBR } from '../ui.js';
+import {
+  el, limpar, comEstados, vazio, plural, dataBR,
+  avisar, confirmar, formularioEmDialogo, campoTexto, campoSelecao, campoDupla,
+} from '../ui.js';
 
 const META = 75;
+
+// ── Cadastro: o mesmo formulário serve para criar e para editar ───────────
+
+const SERIES = ['1º EM', '2º EM', '3º EM', 'Ensino médio concluído'];
+
+function camposDoAluno(aluno = null) {
+  const novo = aluno === null;
+  const a = aluno || {};
+
+  // Se a série gravada não estiver na lista (dado antigo, digitado à mão),
+  // ela entra como opção para não sumir ao abrir a edição.
+  const series = a.serie && !SERIES.includes(a.serie) ? [a.serie, ...SERIES] : SERIES;
+
+  return [
+    campoTexto({ nome: 'nome', rotulo: 'Nome completo', valor: a.nome, obrigatorio: true, maxlength: 120, autocomplete: 'off' }),
+    campoTexto({
+      nome: 'email', rotulo: 'E-mail', tipo: 'email', valor: a.email, obrigatorio: true, autocomplete: 'off',
+      dica: 'É o login do aluno no app.',
+    }),
+    campoDupla(
+      campoTexto({ nome: 'escola', rotulo: 'Escola', valor: a.escola || '' }),
+      campoSelecao({
+        nome: 'serie', rotulo: 'Série', valor: a.serie || '',
+        opcoes: [{ valor: '', rotulo: 'Não informada' }, ...series.map((s) => ({ valor: s, rotulo: s }))],
+      }),
+    ),
+    campoTexto({ nome: 'cidade', rotulo: 'Cidade', valor: a.cidade || '' }),
+    campoTexto({
+      nome: 'senha',
+      rotulo: novo ? 'Senha inicial' : 'Nova senha',
+      tipo: 'password',
+      obrigatorio: novo,
+      minlength: '6',
+      autocomplete: 'new-password',
+      dica: novo
+        ? 'Mínimo de 6 caracteres. Entregue ao aluno junto com o e-mail.'
+        : 'Deixe em branco para manter a senha atual. Preencha só se o aluno esqueceu a dele.',
+    }),
+  ];
+}
+
+async function novoAluno() {
+  const dados = await formularioEmDialogo({
+    titulo: 'Novo aluno',
+    descricao: 'Cria a conta que o jovem vai usar para entrar no app.',
+    campos: camposDoAluno(),
+    enviar: 'Cadastrar aluno',
+  });
+  if (!dados) return;
+  try {
+    const aluno = await api.criarAluno(dados);
+    avisar(`Cadastro de ${aluno.nome} criado. O acesso ao app é pelo e-mail ${aluno.email}.`);
+    location.hash = `#/alunos/${aluno.id}`;
+  } catch (e) {
+    avisar(e.message, { tipo: 'erro' });
+  }
+}
+
+async function editarAluno(aluno, recarregar) {
+  const dados = await formularioEmDialogo({
+    titulo: 'Editar cadastro',
+    descricao: aluno.nome,
+    campos: camposDoAluno(aluno),
+    enviar: 'Salvar alterações',
+  });
+  if (!dados) return;
+  try {
+    const r = await api.atualizarAluno(aluno.id, dados);
+    avisar(r.senhaRedefinida
+      ? 'Cadastro atualizado e senha redefinida. Avise o aluno da senha nova.'
+      : 'Cadastro atualizado.');
+    recarregar();
+  } catch (e) {
+    avisar(e.message, { tipo: 'erro' });
+  }
+}
+
+async function excluirAluno(aluno) {
+  const ok = await confirmar({
+    titulo: 'Excluir este aluno?',
+    texto: `A conta de ${aluno.nome} será apagada com todo o histórico: inscrições, presenças, `
+      + 'certificados e conversas. O acesso ao app é cortado na hora. Não dá para desfazer.',
+    confirmar: 'Excluir definitivamente',
+  });
+  if (!ok) return;
+  try {
+    const r = await api.excluirAluno(aluno.id);
+    avisar(`Cadastro de ${r.nome} excluído, com ${plural(r.removidos.presencas, 'presença', 'presenças')} `
+      + `e ${plural(r.removidos.certificados, 'certificado', 'certificados')}.`);
+    location.hash = '#/alunos';
+  } catch (e) {
+    avisar(e.message, { tipo: 'erro' });
+  }
+}
 
 function faixaDeFrequencia(freq) {
   if (freq === null || freq === undefined) {
@@ -46,6 +143,9 @@ export function listaAlunos(container) {
         el('h1', { texto: 'Alunos' }),
         el('p', { texto: 'Quem está no programa, em quantos cursos e com que frequência.' }),
       ]),
+      el('div', { classe: 'topo__acoes' }, [
+        el('button', { classe: 'botao botao--principal', type: 'button', texto: 'Novo aluno', onclick: novoAluno }),
+      ]),
     ]),
     form,
     resultado,
@@ -58,7 +158,7 @@ export function listaAlunos(container) {
         return el('section', { classe: 'painel' }, [
           vazio('Nenhum aluno encontrado', termo
             ? `Nada corresponde a "${termo}". Tente parte do nome ou do e-mail.`
-            : 'Os alunos aparecem aqui assim que se cadastram pelo aplicativo.'),
+            : 'Use "Novo aluno" para criar a conta que o jovem vai usar no app.'),
         ]);
       }
       return el('section', { classe: 'painel' }, [
@@ -107,6 +207,9 @@ export function fichaAluno(container, alunoId) {
   const area = el('div');
   container.append(el('a', { classe: 'voltar', href: '#/alunos', texto: '← Voltar para os alunos' }), area);
 
+  // Depois de editar, redesenha a ficha com os dados novos do servidor.
+  const recarregar = () => { limpar(container); fichaAluno(container, alunoId); };
+
   comEstados(area, () => api.aluno(alunoId), ({ aluno, cursos }) => {
     const abaixo = cursos.filter((c) => c.frequencia !== null && c.frequencia < META).length;
 
@@ -147,6 +250,14 @@ export function fichaAluno(container, alunoId) {
         ]),
         el('div', { classe: 'topo__acoes' }, [
           el('a', { classe: 'botao botao--contorno', href: `#/chat/${aluno.id}`, texto: 'Abrir conversa' }),
+          el('button', {
+            classe: 'botao botao--contorno', type: 'button', texto: 'Editar cadastro',
+            onclick: () => editarAluno(aluno, recarregar),
+          }),
+          el('button', {
+            classe: 'botao botao--perigo', type: 'button', texto: 'Excluir aluno',
+            onclick: () => excluirAluno(aluno),
+          }),
         ]),
       ]),
 

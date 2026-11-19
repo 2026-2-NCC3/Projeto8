@@ -9,6 +9,17 @@
  */
 const BASE = process.env.API_URL || 'http://localhost:3000/api';
 
+// Identificador desta execução dos testes.
+//
+// O uuid_local é justamente o que torna o check-in idempotente: o servidor
+// recusa, como "duplicado", qualquer reenvio de um uuid que ele já gravou.
+// Isso é o comportamento certo em produção, mas faria o teste falhar na
+// segunda vez que fosse rodado sobre o mesmo banco — o check-in "novo" já
+// existiria. Com um prefixo diferente a cada execução, cada rodada usa uuids
+// inéditos, e o teste de duplicidade continua válido porque repete o mesmo
+// uuid dentro da própria rodada.
+const EXECUCAO = Date.now().toString(36);
+
 let falhas = 0;
 let total = 0;
 function ok(cond, msg) {
@@ -105,7 +116,7 @@ async function main() {
   // --- Check-in e fila de sincronização offline ----------------------------
   // O aluno ainda não está inscrito nesse curso: o check-in tem que ser negado.
   const checkinSemInscricao = await post(`${BASE}/sync/presencas`, {
-    presencas: [{ uuid_local: 'teste-sem-inscricao', qr_code: novaAtividade.qr_code, registrado_em: '2026-12-05 19:05:00' }],
+    presencas: [{ uuid_local: `${EXECUCAO}-sem-inscricao`, qr_code: novaAtividade.qr_code, registrado_em: '2026-12-05 19:05:00' }],
   }, auth).then(json);
   ok(checkinSemInscricao.resultados[0].status === 'nao_inscrito',
     'fila rejeita check-in de curso em que o aluno não está inscrito');
@@ -113,14 +124,14 @@ async function main() {
   // Inscreve e repete.
   await post(`${BASE}/cursos/${novoCurso.id}/inscricao`, {}, auth);
   const checkin = await post(`${BASE}/sync/presencas`, {
-    presencas: [{ uuid_local: 'teste-checkin-1', qr_code: novaAtividade.qr_code, registrado_em: '2026-12-05 19:05:00' }],
+    presencas: [{ uuid_local: `${EXECUCAO}-checkin-1`, qr_code: novaAtividade.qr_code, registrado_em: '2026-12-05 19:05:00' }],
   }, auth).then(json);
   ok(checkin.sincronizadas === 1, 'fila sincroniza check-in válido');
 
   // Reenvio do mesmo item (o app não recebeu a resposta e tentou de novo):
   // tem que ser reconhecido como duplicado, sem criar presença repetida.
   const reenvio = await post(`${BASE}/sync/presencas`, {
-    presencas: [{ uuid_local: 'teste-checkin-1', qr_code: novaAtividade.qr_code, registrado_em: '2026-12-05 19:05:00' }],
+    presencas: [{ uuid_local: `${EXECUCAO}-checkin-1`, qr_code: novaAtividade.qr_code, registrado_em: '2026-12-05 19:05:00' }],
   }, auth).then(json);
   ok(reenvio.resultados[0].status === 'duplicado',
     'reenvio do mesmo check-in é idempotente (status duplicado)');
@@ -138,13 +149,13 @@ async function main() {
   }, authAdmin).then(json);
   const lote = await post(`${BASE}/sync/presencas`, {
     presencas: [
-      { uuid_local: 'lote-ok', qr_code: atividade2.qr_code, registrado_em: '2026-12-12 19:02:00' },
-      { uuid_local: 'lote-invalido', qr_code: 'QR-QUE-NAO-EXISTE', registrado_em: '2026-12-12 19:03:00' },
+      { uuid_local: `${EXECUCAO}-lote-ok`, qr_code: atividade2.qr_code, registrado_em: '2026-12-12 19:02:00' },
+      { uuid_local: `${EXECUCAO}-lote-invalido`, qr_code: 'QR-QUE-NAO-EXISTE', registrado_em: '2026-12-12 19:03:00' },
     ],
   }, auth).then(json);
   ok(lote.sincronizadas === 1 && lote.resultados.length === 2,
     'lote processa item a item: 1 sincronizado, 1 recusado');
-  ok(lote.resultados.find((r) => r.uuid_local === 'lote-invalido').status === 'qr_invalido',
+  ok(lote.resultados.find((r) => r.uuid_local === `${EXECUCAO}-lote-invalido`).status === 'qr_invalido',
     'QR inexistente é marcado como qr_invalido sem travar o lote');
 
   // --- Lista de presença no painel -----------------------------------------
@@ -178,6 +189,64 @@ async function main() {
   // --- Certificados por critério de frequência -----------------------------
   const elegiveis = await fetch(`${BASE}/admin/certificados/elegiveis?frequencia_minima=50`, { headers: authAdmin }).then(json);
   ok(Array.isArray(elegiveis.elegiveis), `GET /admin/certificados/elegiveis lista candidatos (${elegiveis.total})`);
+
+  // --- Gestão de alunos pelo painel ----------------------------------------
+  const patch = (url, body, headers = {}) => fetch(url, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body),
+  });
+  const emailNovo = `teste.${EXECUCAO}@aluno.proximaetapa.org.br`;
+
+  const semSenha = await post(`${BASE}/admin/alunos`, { nome: 'Sem Senha', email: `x.${emailNovo}` }, authAdmin);
+  ok(semSenha.status === 400, 'cadastro de aluno sem senha é recusado (400)');
+
+  const criado = await post(`${BASE}/admin/alunos`, {
+    nome: 'Aluno de Teste', email: emailNovo.toUpperCase(), senha: 'senha123', escola: 'E.E. Teste', serie: '2º EM',
+  }, authAdmin);
+  const alunoNovo = await criado.json();
+  ok(criado.status === 201 && alunoNovo.id > 0, 'POST /admin/alunos cadastra aluno (201)');
+  ok(alunoNovo.email === emailNovo, 'e-mail do cadastro é gravado em minúsculas');
+  ok(alunoNovo.senha_hash === undefined, 'resposta do cadastro não expõe o hash da senha');
+
+  const repetido = await post(`${BASE}/admin/alunos`, { nome: 'Outro', email: emailNovo, senha: 'senha123' }, authAdmin);
+  ok(repetido.status === 409, 'e-mail já cadastrado é recusado (409)');
+
+  const comoAluno = await post(`${BASE}/admin/alunos`, { nome: 'X', email: `y.${emailNovo}`, senha: 'senha123' }, auth);
+  ok(comoAluno.status === 403, 'token de aluno não consegue cadastrar alunos (403)');
+
+  const loginNovo = await post(`${BASE}/auth/login`, { email: emailNovo, senha: 'senha123' }).then(json);
+  ok(!!loginNovo.token, 'aluno cadastrado pelo painel consegue entrar no app');
+
+  const editado = await patch(`${BASE}/admin/alunos/${alunoNovo.id}`, {
+    nome: 'Aluno Editado', email: emailNovo, cidade: 'São Paulo', senha: '',
+  }, authAdmin).then(json);
+  ok(editado.aluno.nome === 'Aluno Editado' && editado.aluno.cidade === 'São Paulo' && !editado.senhaRedefinida,
+    'PATCH /admin/alunos/:id edita o cadastro sem mexer na senha');
+  const senhaAntigaAinda = await post(`${BASE}/auth/login`, { email: emailNovo, senha: 'senha123' });
+  ok(senhaAntigaAinda.status === 200, 'senha em branco na edição mantém a senha atual');
+
+  const redefinido = await patch(`${BASE}/admin/alunos/${alunoNovo.id}`, {
+    nome: 'Aluno Editado', email: emailNovo, senha: 'novaSenha9',
+  }, authAdmin).then(json);
+  const loginSenhaNova = await post(`${BASE}/auth/login`, { email: emailNovo, senha: 'novaSenha9' });
+  const loginSenhaVelha = await post(`${BASE}/auth/login`, { email: emailNovo, senha: 'senha123' });
+  ok(redefinido.senhaRedefinida && loginSenhaNova.status === 200 && loginSenhaVelha.status === 401,
+    'redefinir senha pelo painel troca a senha do aluno');
+
+  const emailDeOutro = await patch(`${BASE}/admin/alunos/${alunoNovo.id}`, {
+    nome: 'Aluno Editado', email: 'ana.souza@aluno.proximaetapa.org.br',
+  }, authAdmin);
+  ok(emailDeOutro.status === 409, 'edição não pode usar o e-mail de outro aluno (409)');
+
+  const tokenDoExcluido = { Authorization: `Bearer ${(await loginSenhaNova.json()).token}` };
+  const antesDeExcluir = await fetch(`${BASE}/sync`, { headers: tokenDoExcluido });
+  ok(antesDeExcluir.status === 200, 'aluno novo sincroniza normalmente antes da exclusão');
+
+  const excluido = await fetch(`${BASE}/admin/alunos/${alunoNovo.id}`, { method: 'DELETE', headers: authAdmin }).then(json);
+  ok(excluido.ok === true, 'DELETE /admin/alunos/:id exclui o aluno');
+  const fichaApagada = await fetch(`${BASE}/admin/alunos/${alunoNovo.id}`, { headers: authAdmin });
+  ok(fichaApagada.status === 404, 'ficha do aluno excluído não existe mais (404)');
+  const depoisDeExcluir = await fetch(`${BASE}/sync`, { headers: tokenDoExcluido });
+  ok(depoisDeExcluir.status === 401, 'token de aluno excluído para de funcionar na hora (401)');
 
   // --- Encerramento ---------------------------------------------------------
   console.log(`\n${total - falhas}/${total} verificações passaram.`);
