@@ -37,6 +37,14 @@
     <string name="atalho_notificacoes">Notificações</string>
     <string name="atalho_perfil">Meu perfil</string>
 
+    <!-- Link para o site institucional da organização. A URL fica aqui, e não
+         escrita no meio do código, para que mudar de endereço seja a troca de
+         uma linha só. -->
+    <string name="atalho_site">Conheça a Próxima Etapa</string>
+    <string name="atalho_site_descricao">Veja os programas, a equipe e como a organização funciona</string>
+    <string name="url_site_ong" translatable="false">https://proximaetapa.org.br</string>
+    <string name="erro_abrir_site">Não foi possível abrir o navegador neste aparelho. O endereço é proximaetapa.org.br</string>
+
     <!-- Cursos -->
     <string name="titulo_cursos">Cursos</string>
     <string name="cursos_vazio">Nenhum curso disponível no momento.</string>

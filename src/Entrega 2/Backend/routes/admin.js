@@ -203,7 +203,7 @@ router.get('/admin/atividades/:id/qrcode.svg', async (req, res) => {
       type: 'svg',
       margin: 1,
       width: 320,
-      color: { dark: '#1E6F5C', light: '#FFFFFF' },
+      color: { dark: '#0C7F39', light: '#FFFFFF' },
     });
     res.type('image/svg+xml').send(svg);
   } catch (e) {

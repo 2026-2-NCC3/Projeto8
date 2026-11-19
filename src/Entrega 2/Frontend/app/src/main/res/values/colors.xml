@@ -1,17 +1,61 @@
 <resources>
-    <color name="primary">#1E6F5C</color>
-    <color name="primary_dark">#154F42</color>
-    <color name="accent">#F2A93B</color>
-    <color name="background">#FAFAFA</color>
-    <color name="text_primary">#1A1A1A</color>
-    <color name="text_secondary">#5F5F5F</color>
+    <!-- ======================================================================
+         Paleta da Próxima Etapa.
+
+         As cores abaixo foram extraídas do site institucional da organização
+         (proximaetapa.org.br), para que o aplicativo e o site sejam
+         reconhecidos como a mesma marca.
+
+         Cores de marca, exatamente como aparecem no site:
+           verde  #20C058  — botão principal e destaques do título
+           roxo   #9030E8  — selos de seção
+           amarelo #F8C028 — números de impacto e detalhes do logo
+         ====================================================================== -->
+
+    <color name="marca_verde">#20C058</color>
+    <color name="marca_roxo">#9030E8</color>
+    <color name="marca_amarelo">#F8C028</color>
+
+    <!-- `primary` é o verde da marca ESCURECIDO.
+
+         O verde original (#20C058) tem contraste de apenas 2,4:1 com texto
+         branco — abaixo do mínimo de 4,5:1 das boas práticas de
+         acessibilidade, que o documento do projeto exige. Escurecendo o mesmo
+         matiz chegamos a 5,1:1, preservando a identidade sem prejudicar quem
+         enxerga pouco ou usa o celular sob sol forte, que é o caso real do
+         público atendido. O tom vivo original continua disponível em
+         `marca_verde`, para elementos que não carregam texto. -->
+    <color name="primary">#0C7F39</color>
+    <color name="primary_dark">#08632B</color>
+
+    <!-- Roxo da marca como cor de destaque: passa com folga em texto branco
+         (5,6:1) e é o que o site usa para marcar seções e selos. -->
+    <color name="accent">#9030E8</color>
+
+    <!-- Âmbar escuro, da família do amarelo da marca. O site usa verde, roxo e
+         amarelo para os três números de impacto, e o app repete essa tríade
+         nos três números do resumo. O amarelo puro só tem 1,7:1 sobre branco,
+         então o número usa este tom escurecido (5,5:1). -->
+    <color name="destaque_ambar">#8A6200</color>
+
+    <!-- Fundo lilás claríssimo das seções do site. -->
+    <color name="background">#F6F2F7</color>
+    <color name="superficie">#FFFFFF</color>
+
+    <color name="text_primary">#202030</color>
+    <color name="text_secondary">#484860</color>
     <color name="white">#FFFFFF</color>
 
-    <!-- Entrega 2: estados de erro e de aviso.
-         O aviso é âmbar, e não vermelho, porque "offline" e "presença na
-         fila" não são falhas — são situações normais que o app trata. -->
+    <!-- Estados de erro e de aviso.
+         O aviso usa a família do amarelo da marca, e não vermelho, porque
+         "offline" e "presença na fila" não são falhas — são situações normais
+         que o app trata. O texto é escuro porque o amarelo da marca não
+         sustenta texto branco (1,7:1). -->
     <color name="erro">#B3261E</color>
-    <color name="aviso">#9A6700</color>
-    <color name="aviso_fundo">#FFF4E0</color>
-    <color name="aviso_texto">#7A4F01</color>
+    <color name="aviso">#7A5A00</color>
+    <color name="aviso_fundo">#FFF6E0</color>
+    <color name="aviso_texto">#6B4E00</color>
+
+    <!-- Balão da equipe no chat: lilás claro, da mesma família do fundo. -->
+    <color name="balao_equipe">#EFE9F3</color>
 </resources>

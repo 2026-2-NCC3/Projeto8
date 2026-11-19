@@ -84,7 +84,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <LinearLayout
@@ -117,7 +117,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <LinearLayout
@@ -132,7 +132,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:textColor="@color/primary"
+                                android:textColor="@color/accent"
                                 android:textSize="24sp"
                                 android:textStyle="bold" />
 
@@ -150,7 +150,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <LinearLayout
@@ -165,7 +165,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:textColor="@color/accent"
+                                android:textColor="@color/destaque_ambar"
                                 android:textSize="24sp"
                                 android:textStyle="bold" />
 
@@ -226,7 +226,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     app:cardBackgroundColor="@color/primary"
-                    app:cardCornerRadius="12dp"
+                    app:cardCornerRadius="18dp"
                     app:cardElevation="2dp">
 
                     <LinearLayout
@@ -281,7 +281,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -302,7 +302,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -323,7 +323,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -344,7 +344,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -365,7 +365,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -386,7 +386,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -407,7 +407,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -428,7 +428,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -449,7 +449,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -470,7 +470,7 @@
                         android:layout_margin="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="18dp"
                         app:cardElevation="1dp">
 
                         <TextView
@@ -483,6 +483,50 @@
                             android:textColor="@color/text_primary" />
                     </com.google.android.material.card.MaterialCardView>
                 </GridLayout>
+
+                <!--
+                    Chamada para o site institucional da Próxima Etapa.
+                    Usa o verde da marca e o formato arredondado do botão
+                    "Quero participar" do site, para que o aluno reconheça
+                    que o aplicativo e a organização são a mesma coisa.
+                -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardSite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardBackgroundColor="@color/primary"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="24dp"
+                        android:paddingTop="18dp"
+                        android:paddingEnd="24dp"
+                        android:paddingBottom="18dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/atalho_site"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/atalho_site_descricao"
+                            android:textColor="@color/white"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

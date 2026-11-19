@@ -1,7 +1,9 @@
 package br.org.proximaetapa.app.ui;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -125,12 +127,40 @@ public class HomeActivity extends AppCompatActivity {
         abrirAoTocar(R.id.cardChat, ChatActivity.class);
         abrirAoTocar(R.id.cardNotificacoes, NotificacoesActivity.class);
         abrirAoTocar(R.id.cardPerfil, PerfilActivity.class);
+
+        MaterialCardView cardSite = findViewById(R.id.cardSite);
+        if (cardSite != null) {
+            cardSite.setOnClickListener(v -> abrirSiteDaOrganizacao());
+        }
     }
 
     private void abrirAoTocar(int idDoCard, Class<?> destino) {
         MaterialCardView card = findViewById(idDoCard);
         if (card != null) {
             card.setOnClickListener(v -> startActivity(new Intent(this, destino)));
+        }
+    }
+
+    /**
+     * Abre o site da Próxima Etapa no navegador do celular.
+     *
+     * Sai do app de propósito: o site é institucional, muda com frequência e
+     * é mantido pela própria organização, então replicar o conteúdo aqui
+     * dentro criaria uma segunda versão para manter. O ACTION_VIEW entrega a
+     * URL para o navegador padrão do aparelho.
+     *
+     * O try/catch cobre o caso — raro, mas possível em aparelhos muito
+     * restritos ou em emuladores sem navegador — de não existir nenhum app
+     * capaz de abrir links. Sem ele, o app fecharia com
+     * ActivityNotFoundException.
+     */
+    private void abrirSiteDaOrganizacao() {
+        Intent navegador = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(getString(R.string.url_site_ong)));
+        try {
+            startActivity(navegador);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.erro_abrir_site, Toast.LENGTH_LONG).show();
         }
     }
 
